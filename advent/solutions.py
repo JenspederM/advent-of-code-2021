@@ -167,38 +167,6 @@ def day_04():
 
 
 def day_05(verbose: bool = False):
-    class Board:
-        def __init__(self, starts, ends) -> None:
-            x_min = min(v[0] for v in starts + ends)
-            x_max = max(v[0] for v in starts + ends)
-            y_min = min(v[1] for v in starts + ends)
-            y_max = max(v[1] for v in starts + ends)
-
-            self.board = [
-                [0 for i in range(x_min, x_max + 1)] for j in range(y_min, y_max + 1)
-            ]
-
-            for start, end in zip(starts, ends):
-                self.draw_line(start, end)
-
-        def draw_line(self, start, end):
-            x1, y1 = start
-            x2, y2 = end
-            if x1 == x2:
-                for i in range(y1, y2 + 1):
-                    self.board[i][x1] += 1
-            else:
-                for i in range(x1, x2 + 1):
-                    self.board[y1][i] += 1
-            # print(str(self))
-
-        def __str__(self) -> str:
-            rows = [
-                " ".join(["." if int(i) < 1 else str(i) for i in row])
-                for row in self.board
-            ]
-            return "\n".join(rows)
-
     question = "how many points do at least two lines overlap?"
     data = read_data("day_05.txt")
     test = """0,9 -> 5,9
@@ -263,6 +231,14 @@ def day_05(verbose: bool = False):
 
     print_solution(5, "{} lines overlap at least twice".format(answer), question)
 
+    def is_diagonal(l):
+        s, e = l.split(" -> ")
+        x1, y1 = s.split(",")
+        x2, y2 = e.split(",")
+        if x1 == y1 and x2 == y2:
+            return True
+
+    print(is_diagonal("1,1 -> 3,3"))
     return answer
 
 
