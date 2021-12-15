@@ -5,10 +5,17 @@ from pprint import pprint
 
 def day_01(verbose=False):
     question = "How many measurements are larger than the previous measurement?"
-    data = read_data("day_01.txt")
+    data = [int(v) for v in read_data("day_01.txt")]
 
-    part_01 = sum(m1 < m2 for m1, m2 in zip(data[: len(data) - 1], data[1:]))
-    part_02 = None
+    def solve_part_01(data):
+        return sum(m1 < m2 for m1, m2 in zip(data[: len(data) - 1], data[1:]))
+
+    def solve_part_02(data):
+        sums = [sum(data[i : i + 3]) for i in range(len(data) - 3 + 1)]
+        return sum(m1 < m2 for m1, m2 in zip(sums[: len(sums) - 1], sums[1:]))
+
+    part_01 = solve_part_01(data)
+    part_02 = solve_part_02(data)
 
     if verbose is True:
         print_solution(
@@ -34,26 +41,29 @@ def day_02(verbose=False):
     question = "What do you get if you multiply your final horizontal position by your final depth?"
     data = read_data("day_02.txt")
 
-    x = 0
-    y = 0
+    def solve_part_01(data):
+        x = 0
+        y = 0
 
-    for line in data:
-        d, v = line.split(" ")
+        for line in data:
+            d, v = line.split(" ")
 
-        if d == "forward":
-            x += int(v)
-        elif d == "down":
-            y += int(v)
-        elif d == "up":
-            y -= int(v)
-        else:
-            raise KeyError("Direction {} is not supported".format(d))
+            if d == "forward":
+                x += int(v)
+            elif d == "down":
+                y += int(v)
+            elif d == "up":
+                y -= int(v)
+            else:
+                raise KeyError("Direction {} is not supported".format(d))
 
-    answer = x * y
+        return x * y
+
+    part_01 = solve_part_01(data)
 
     if verbose is True:
         print_solution(
-            2, "horizontal position * final depth = {}".format(answer), question
+            "2.1", "horizontal position * final depth = {}".format(part_01), question
         )
 
     return data
