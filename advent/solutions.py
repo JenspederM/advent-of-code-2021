@@ -7,10 +7,25 @@ def day_01(verbose=False):
     question = "How many measurements are larger than the previous measurement?"
     data = read_data("day_01.txt")
 
-    answer = sum(m1 < m2 for m1, m2 in zip(data[: len(data) - 1], data[1:]))
+    part_01 = sum(m1 < m2 for m1, m2 in zip(data[: len(data) - 1], data[1:]))
+    part_02 = None
 
     if verbose is True:
-        print_solution(1, answer, question)
+        print_solution(
+            "1.1",
+            "Considering only the following measurement, {} are larger than the previous".format(
+                part_01
+            ),
+            question,
+            top=True,
+        )
+        print_solution(
+            "1.2",
+            "Considering three sliding measurements, {} are larger than the previous".format(
+                part_02
+            ),
+            question,
+        )
 
     return data
 
@@ -367,4 +382,4 @@ def day_07():
 
 
 if __name__ == "__main__":
-    day_05()
+    day_01(verbose=True)
