@@ -59,11 +59,37 @@ def day_02(verbose=False):
 
         return x * y
 
+    def solve_part_02(data):
+        x = 0
+        y = 0
+        aim = 0
+
+        for line in data:
+            d, v = line.split(" ")
+            v = int(v)
+
+            if d == "forward":
+                x += v
+                if aim > 0:
+                    y += aim * v
+            elif d == "down":
+                aim += v
+            elif d == "up":
+                aim -= v
+            else:
+                raise KeyError("Direction {} is not supported".format(d))
+
+        return x * y
+
     part_01 = solve_part_01(data)
+    part_02 = solve_part_02(data)
 
     if verbose is True:
         print_solution(
             "2.1", "horizontal position * final depth = {}".format(part_01), question
+        )
+        print_solution(
+            "2.1", "horizontal position * final depth = {}".format(part_02), question
         )
 
     return data
@@ -392,4 +418,4 @@ def day_07():
 
 
 if __name__ == "__main__":
-    day_01(verbose=True)
+    day_02(verbose=True)
