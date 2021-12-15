@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Tuple, Union
 from utils import read_data, print_solution, bcolors
 from pprint import pprint
 
@@ -182,64 +182,114 @@ def day_05(verbose: bool = False):
         "\n"
     )
 
-    def parse(data):
-        starts = []
-        ends = []
+    # starts, ends = parse(test)
 
-        for line in data:
-            start, end = [
-                [int(v) for v in pair.split(",")] for pair in line.split(" -> ")
-            ]
-            starts.append(start)
-            ends.append(end)
+    class Board:
+        def __init__(self, data) -> None:
+            starts, ends = self.parse(data)
+            self.starts = starts
+            self.ends = ends
 
-        return starts, ends
+            self.board = None
+            self.answer = None
 
-    starts, ends = parse(data)
+            self.reset()
 
-    def get_board(starts, ends):
-        x_max = max(v[0] for v in starts + ends)
-        y_max = max(v[1] for v in starts + ends)
-        board = [[0 for i in range(0, x_max + 1)] for j in range(0, y_max + 1)]
-        return board
-
-    board = get_board(starts, ends)
-
-    def draw_lines(starts, ends, board):
-        for start, end in zip(starts, ends):
-            x1, y1 = start
-            x2, y2 = end
-            x_delta = abs(x1 - x2)
-            y_delta = abs(y1 - y2)
-            if x1 == x2 or y1 == y2:
-                for x in range(min(x1, x2), min(x1, x2) + x_delta + 1):
-                    for y in range(min(y1, y2), min(y1, y2) + y_delta + 1):
-                        board[y][x] += 1
-
-        return board
-
-    board = draw_lines(starts, ends, board)
-
-    answer = len([v for row in board for v in row if v >= 2])
-    # p1(starts[0], ends[0])
-    if verbose:
-        print(
-            "\n".join(
-                ["".join(["." if v < 1 else str(v) for v in row]) for row in board]
+        def __str__(self) -> str:
+            return "\n".join(
+                ["".join(["." if v < 1 else str(v) for v in row]) for row in self.board]
             )
-        )
 
-    print_solution(5, "{} lines overlap at least twice".format(answer), question)
+        def __repr__(self) -> str:
+            return self.__str__
 
-    def is_diagonal(l):
-        s, e = l.split(" -> ")
-        x1, y1 = s.split(",")
-        x2, y2 = e.split(",")
-        if x1 == y1 and x2 == y2:
-            return True
+        def print_solution(self, day: Union[int, float] = 5):
+            print_solution(
+                day, "{} lines overlap at least twice".format(self.answer), question
+            )
 
-    print(is_diagonal("1,1 -> 3,3"))
-    return answer
+        def parse(self, data):
+            starts = []
+            ends = []
+
+            for line in data:
+                start, end = [
+                    [int(v) for v in pair.split(",")] for pair in line.split(" -> ")
+                ]
+                starts.append(start)
+                ends.append(end)
+
+            return starts, ends
+
+        def reset(self):
+            x_max = max(v[0] for v in self.starts + self.ends)
+            y_max = max(v[1] for v in self.starts + self.ends)
+            self.board = [[0 for i in range(0, x_max + 1)] for j in range(0, y_max + 1)]
+            self.answer = None
+
+        def draw_straight_lines(self):
+            for start, end in zip(self.starts, self.ends):
+                x1, y1 = start
+                x2, y2 = end
+                x_delta = abs(x1 - x2)
+                y_delta = abs(y1 - y2)
+                if x1 == x2 or y1 == y2:
+                    for x in range(min(x1, x2), min(x1, x2) + x_delta + 1):
+                        for y in range(min(y1, y2), min(y1, y2) + y_delta + 1):
+                            self.board[y][x] += 1
+            self.answer = len([v for row in self.board for v in row if v >= 2])
+
+        def draw_diagonal_lines(self):
+            for start, end in zip(self.starts, self.ends):
+                x1, y1 = start
+                x2, y2 = end
+                dx = abs(x1 - x2)
+                dy = abs(y1 - y2)
+
+                if dx == dy:
+                    print(f"{start}, {end}")
+                    y_offset = 1 if y1 < y2 else -1
+                    x_offset = 1 if x1 < x2 else -1
+                    ys = [i for i in range(y1, y2 + y_offset, y_offset)]
+                    xs = [i for i in range(x1, x2 + x_offset, x_offset)]
+                    print(ys)
+                    print(xs)
+                    for i in range(y1, y2 + y_offset, y_offset):
+                        for j in range(x1, x2 + x_offset, x_offset):
+                            dx = abs(x1 - j)
+                            dy = abs(y1 - i)
+                            if dx == dy:
+                                self.board[i][j] += 1
+            self.answer = len([v for row in self.board for v in row if v >= 2])
+
+        def solve(self, part: int = 1):
+            for start, end in zip(self.starts, self.ends):
+                x1, y1 = start
+                x2, y2 = end
+                xd = abs(x1 - x2)
+                yd = abs(y1 - y2)
+                if part >= 1 and (x1 == x2 or y1 == y2):
+                    for x in range(min(x1, x2), min(x1, x2) + xd + 1):
+                        for y in range(min(y1, y2), min(y1, y2) + yd + 1):
+                            self.board[y][x] += 1
+                if part == 2 and xd == yd:
+                    xo = 1 if x1 < x2 else -1
+                    yo = 1 if y1 < y2 else -1
+                    xs = [i for i in range(x1, x2 + xo, xo)]
+                    ys = [i for i in range(y1, y2 + yo, yo)]
+                    for x, y in zip(xs, ys):
+                        if xd == yd:
+                            self.board[y][x] += 1
+
+            self.answer = len([v for row in self.board for v in row if v >= 2])
+
+    part_01 = Board(data)
+    part_01.solve(1)
+    part_01.print_solution("5.1")
+    part_02 = Board(data)
+    part_02.solve(2)
+    part_02.print_solution("5.2")
+    return part_01.answer, part_02.answer
 
 
 def day_06(verbose: Union[int, bool] = 1):
