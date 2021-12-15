@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Union
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -25,7 +25,9 @@ def read_data(file_name: str) -> List[str]:
     return data
 
 
-def print_solution(day: int, answer: str, question: str = None, width: int = 80) -> str:
+def print_solution(
+    day: Union[int, str], answer: str, question: str = None, width: int = 80
+) -> str:
     lines = []
 
     if day == 1:
