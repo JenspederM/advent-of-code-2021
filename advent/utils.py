@@ -26,11 +26,15 @@ def read_data(file_name: str) -> List[str]:
 
 
 def print_solution(
-    day: Union[int, str], answer: str, question: str = None, width: int = 80
+    day: Union[int, str],
+    answer: str,
+    question: str = None,
+    width: int = 80,
+    top: bool = False,
 ) -> str:
     lines = []
 
-    if day == 1:
+    if top:
         lines.append("-" * width)
 
     lines.append("Day {}".format(day))
